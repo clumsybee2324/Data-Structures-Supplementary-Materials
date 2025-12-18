@@ -1,0 +1,9 @@
+Sentinel Nodes are the header and tailer (for doubly linked list) which not include any data (dummy nodes)
+In C implementation they can be represented as:
+list->header->next=list->head;
+list->tailer->prev=list->tail;
+They don't represent any data and this structure can be used as this form.
+For example:
+list->header->next=node;
+(The "node" can be thought as head element that we used as before)
+They are out of element.
