@@ -4,16 +4,19 @@
 typedef struct Node{
     int data;
     struct Node* next;
+    struct Node* pre;
 }Node;
 
 typedef struct List{
     Node* head;
+    Node* tail;
     int elemcount;
 }List;
 
 void createList(List* list){
     list->elemcount=0;
     list->head=NULL;
+    list->tail=NULL;
 }
 
 void addElement(List* list, int data){
@@ -21,6 +24,11 @@ void addElement(List* list, int data){
     if(!node)return;
 
     node->data=data;
+    node->pre=NULL;
+    if(!list->head)list->tail=node;
+    else{
+        list->head->pre=node;
+    }
     node->next=list->head;
     list->head=node;
     list->elemcount++;
@@ -44,9 +52,27 @@ void addToPosition(List* list, int data, int position){
 
     Node* node=(Node*)malloc(sizeof(Node));
     node->data=data;
-    node->next=cur->next;
-    prev->next=node; 
+    node->next=cur;
+    prev->next=node;
+    node->pre=prev;
+    cur->pre=node; 
     list->elemcount++;   
+}
+
+void addBack(List* list, int data){
+    Node* node=(Node*)malloc(sizeof(Node));
+    node->data=data;
+    node->next=NULL;
+    node->pre=NULL;
+
+    if(list->tail==NULL)list->head=node;
+    else{
+        list->tail->next=node;
+    }
+
+    node->pre=list->tail;
+    list->tail=node;
+    list->elemcount++;
 }
 
 void removeFromPosition(List* list, int position){
@@ -60,6 +86,18 @@ void removeFromPosition(List* list, int position){
 
     Node* old=cur;
     prev->next=cur->next;
+    cur->next->pre=prev;
+    free(old);
+    list->elemcount--;
+}
+
+void removeBack(List* list){
+    Node* old=list->tail;
+    list->tail=old->pre;
+    if(list->tail)list->tail->next=NULL;
+    else{
+        list->head=NULL;
+    }
     free(old);
     list->elemcount--;
 }
@@ -79,6 +117,10 @@ int main(){
     addToPosition(mylist, 67, 3);
 
     removeFromPosition(mylist, 2);
+
+    addBack(mylist, 38);
+
+
 
     Node* current=mylist->head;
     while (current !=NULL){
